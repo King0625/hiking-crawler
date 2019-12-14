@@ -6,6 +6,7 @@ exports.getFirstPage = (req, res, next) => {
 
     crawlFirst()
     .then(totalPage => {
+
         const promises = [];
         var i = 0
         for(let i = 0; i < 15; i++){
@@ -124,18 +125,16 @@ function crawlPost(url){
         const pattern = /([\d]{4}(\/|\.))?[\d]{1,2}[/\.][\d]{1,2}/;
         const title = $('.article-metaline').eq(1).children().eq(1).text()
         const body = content.match(/\n(.*?\n)+--/);
-        const post_time = $('.article-metaline').eq(2).children().eq(1).text().split(/(\s+)/);
-        const format_time = `${post_time[2]} ${post_time[4]}, ${post_time[8]} ${twelveHourTime(post_time[6])}`;
 
         const depart_time = title.match(pattern).length == 0 ? body[0].match(pattern) : title.match(pattern)[0];
         // const depart_time = ;
         const formated_depart_time = formatTime(depart_time);
         console.log(depart_time);
         const data = {
-            title: title,
-            post_time: moment(format_time, "lll").format(),
-            depart_time: moment(formated_depart_time).format(),
-            content: body[0]
+            id: url.match(/Hiking\/([\d\w\.]+).html/)[1],
+            subject: title,
+            departure_date: moment(formated_depart_time).format(),
+            description: body[0]
         }
         return data;
     })
