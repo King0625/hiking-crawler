@@ -46,20 +46,7 @@ exports.getFirstPage = (req, res, next) => {
             .then(results => {
                 var newArray = results.filter(value => Object.keys(value).length !== 0)
                 // res.send(newArray);
-                Invitation.bulkCreate(newArray, { returning: ['id'], ignoreDuplicates: true })
-                .then(datas => {
-                    // const newData = [];
-                    // datas.forEach(data => {
-                    //     if(data.id != null){
-                    //         newData.push(data);
-                    //     }
-                    // })
-                    // res.send(newData);
-                    res.send(datas);
-                })
-                .catch(err => {
-                    res.send(err);
-                })
+                res.send(newArray);
             })
             .catch(err => {
                 res.send(err);
