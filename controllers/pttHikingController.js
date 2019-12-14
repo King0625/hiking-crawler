@@ -133,10 +133,11 @@ function crawlPost(url){
         const formated_depart_time = formatTime(depart_time);
         // console.log(depart_time);
         const data = {
-            postId: url.match(/Hiking\/([\d\w\.]+).html/)[1],
+            ptt_id: url.match(/Hiking\/([\d\w\.]+).html/)[1],
             subject: title,
             departure_date: moment(formated_depart_time).format(),
-            description: body[0]
+            description: body[0],
+            ptt_url: url
         }
         // if(JSON.stringify(data) !== "{}"){
         return data;
