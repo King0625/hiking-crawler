@@ -10,19 +10,20 @@ module.exports = {
       },
       postId: {
         allowNull: false,
+        unique: true,
         type: Sequelize.STRING
       },
       subject: {
         allowNull: false,
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       departure_date: {
         allowNull: false,
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       description: {
         allowNull: false,
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,

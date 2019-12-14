@@ -11,7 +11,7 @@ exports.getFirstPage = (req, res, next) => {
 
         const promises = [];
         var i = 0
-        for(let i = 0; i < 15; i++){
+        for(let i = 0; i < 20; i++){
             promises.push(crawlFirst(totalPage - i));
         }
         // crawlFirst(totalPage - i)
@@ -44,8 +44,22 @@ exports.getFirstPage = (req, res, next) => {
             })
             Promise.all(promises)
             .then(results => {
-
-                res.send(results);
+                var newArray = results.filter(value => Object.keys(value).length !== 0)
+                // res.send(newArray);
+                Invitation.bulkCreate(newArray, { returning: ['id'], ignoreDuplicates: true })
+                .then(datas => {
+                    // const newData = [];
+                    // datas.forEach(data => {
+                    //     if(data.id != null){
+                    //         newData.push(data);
+                    //     }
+                    // })
+                    // res.send(newData);
+                    res.send(datas);
+                })
+                .catch(err => {
+                    res.send(err);
+                })
             })
             .catch(err => {
                 res.send(err);
@@ -130,14 +144,16 @@ function crawlPost(url){
         const depart_time = title.match(pattern).length == 0 ? body[0].match(pattern) : title.match(pattern)[0];
         // const depart_time = ;
         const formated_depart_time = formatTime(depart_time);
-        console.log(depart_time);
+        // console.log(depart_time);
         const data = {
             postId: url.match(/Hiking\/([\d\w\.]+).html/)[1],
             subject: title,
             departure_date: moment(formated_depart_time).format(),
             description: body[0]
         }
+        // if(JSON.stringify(data) !== "{}"){
         return data;
+        // }
     })
     .catch(err => {
         return err;
