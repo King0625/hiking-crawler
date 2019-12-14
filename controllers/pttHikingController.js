@@ -1,5 +1,6 @@
 const rp = require('request-promise');
 const cheerio = require('cheerio');
+const moment = require('moment');
 
 exports.getFirstPage = (req, res, next) => {
 
@@ -123,19 +124,17 @@ function crawlPost(url){
         const pattern = /([\d]{4}(\/|\.))?[\d]{1,2}[/\.][\d]{1,2}/;
         const title = $('.article-metaline').eq(1).children().eq(1).text()
         const body = content.match(/\n(.*?\n)+--/);
-        const depart_time = () => {
-            if(title.match(pattern).length == 0){
-                return body[0].match(pattern);
-            }else{
-                return title.match(pattern)[0];
-            }
-        }
+        const post_time = $('.article-metaline').eq(2).children().eq(1).text().split(/(\s+)/);
+        const format_time = `${post_time[2]} ${post_time[4]}, ${post_time[8]} ${twelveHourTime(post_time[6])}`;
+
+        const depart_time = title.match(pattern).length == 0 ? body[0].match(pattern) : title.match(pattern)[0];
         // const depart_time = ;
+        const formated_depart_time = formatTime(depart_time);
+        console.log(depart_time);
         const data = {
             title: title,
-            post_time: $('.article-metaline').eq(2).children().eq(1).text(),
-            // pattern: /([\d]{4}(\/|\.))?[\d]{1,2}[/\.-][\d]{1,2}/,
-            depart_time: depart_time(),
+            post_time: moment(format_time, "lll").format(),
+            depart_time: moment(formated_depart_time).format(),
             content: body[0]
         }
         return data;
@@ -143,4 +142,45 @@ function crawlPost(url){
     .catch(err => {
         return err;
     })
+}
+
+function twelveHourTime(time){
+    return moment(time, ["hh:mm:ss"]).format("h:mm A");
+}
+
+function formatTime(time){
+    if(time.match(/\d+\.\d+\.\d+/)){
+        time = time.split('.');
+        var time = time.map(part => {
+            if(part.length == 1){
+                part = "0" + part
+                // console.log(part);
+            }
+            return part;
+        });
+        // console.log(time);
+        return time.join('-');
+        
+    }else if(time.match(/\d+\/\d+/)){
+        time = time.split('/');
+        var time = time.map(part => {
+            if(part.length == 1){
+                part = "0" + part
+                // console.log(part);
+            }
+            return part;
+        });
+        if(moment().format('MM') - time[0] > 5){
+            year = moment().add(1, 'year').format('YYYY');
+
+            // console.log(moment().format('MM'));
+            // console.log(time.join('/'));
+        }else{
+            year = moment().format('YYYY');
+        }
+
+        return year + "-" + time.join('-');
+        // console.log(time);
+    }
+
 }
