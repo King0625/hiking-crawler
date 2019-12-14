@@ -1,6 +1,8 @@
 const rp = require('request-promise');
 const cheerio = require('cheerio');
 const moment = require('moment');
+const Model = require('../models');
+const Invitation = Model.Invitation;
 
 exports.getFirstPage = (req, res, next) => {
 
@@ -40,10 +42,9 @@ exports.getFirstPage = (req, res, next) => {
             flattened_arr.forEach(url => {
                 promises.push(crawlPost(url));
             })
-            // console.log(flattened)
-            // res.send(flattened_arr);
             Promise.all(promises)
             .then(results => {
+
                 res.send(results);
             })
             .catch(err => {
@@ -131,7 +132,7 @@ function crawlPost(url){
         const formated_depart_time = formatTime(depart_time);
         console.log(depart_time);
         const data = {
-            id: url.match(/Hiking\/([\d\w\.]+).html/)[1],
+            postId: url.match(/Hiking\/([\d\w\.]+).html/)[1],
             subject: title,
             departure_date: moment(formated_depart_time).format(),
             description: body[0]
